@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         val user = User(
             cpf = "564",
             email = "joao@email.com",
-            id_usuario = "1",
+            id_usuario = 1,
             nome = "João",
             senha = "1234"
 
