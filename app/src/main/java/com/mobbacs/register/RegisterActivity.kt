@@ -14,8 +14,17 @@ import io.github.jan.supabase.auth.auth
 import com.mobbacs.database.UserRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import io.github.jan.supabase.auth.providers.builtin.Email
+
 
 class RegisterActivity: AppCompatActivity() {
+
+    suspend fun cadastrar(email: String, senha: String) {
+        SupabaseClient.client.auth.signUpWith(Email) {
+            this.email = email
+            this.password = senha
+        }
+    }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,22 +44,24 @@ class RegisterActivity: AppCompatActivity() {
             val emailUsuario = email.text.toString()
             val senhaUsuario = senha.text.toString()
             val cpfUsuario = cpf.text.toString()
-            val idUsuario = SupabaseClient.client.auth.currentUserOrNull()?.id
 
             if(nomeUsuario.isEmpty() || emailUsuario.isEmpty() || senhaUsuario.isEmpty() || cpfUsuario.isEmpty())
             {
                 Toast.makeText(this, "Escreva vagabundo", Toast.LENGTH_SHORT).show()
             }
             else{
-                val usuario = User(
-                    cpf = cpfUsuario,
-                    email = emailUsuario,
-                    nome = nomeUsuario,
-                    id_usuario = idUsuario
-                )
+
 
                 lifecycleScope.launch() {
                     try {
+                        cadastrar(emailUsuario, senhaUsuario)
+                        val idUsuario = SupabaseClient.client.auth.currentUserOrNull()?.id
+                        val usuario = User(
+                            cpf = cpfUsuario,
+                            email = emailUsuario,
+                            nome = nomeUsuario,
+                            id_usuario = idUsuario
+                        )
                         userRepository.createUser(usuario)
                         Toast.makeText(
                             this@RegisterActivity,
