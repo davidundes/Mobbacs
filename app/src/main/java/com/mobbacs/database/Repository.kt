@@ -171,7 +171,7 @@ class UserRepository {
             .insert(user)
     }
 
-    suspend fun getUser(id: Int): User? {
+    suspend fun getUser(id: String): User? {
         return client
             .from("tb_usuario")
             .select {
@@ -183,16 +183,23 @@ class UserRepository {
     }
 
     suspend fun updateUser(user: User) {
+        val idUsuario = requireNotNull(user.id_usuario) {
+            "O id_usuario não pode ser nulo"
+        }
+
         client
             .from("tb_usuario")
             .update(user) {
                 filter {
-                    eq("id_usuario", user.id_usuario)
+                    eq(
+                        column = "id_usuario",
+                        value = idUsuario
+                    )
                 }
             }
     }
 
-    suspend fun deleteUser(id: Int) {
+    suspend fun deleteUser(id: String) {
         client
             .from("tb_usuario")
             .delete {
